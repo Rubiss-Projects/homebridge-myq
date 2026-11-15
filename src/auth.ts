@@ -1,4 +1,6 @@
-import { chmod, readFile, rename, unlink, writeFile } from 'node:fs/promises';
+import { readFileSync, renameSync } from 'node:fs';
+import lockfile from 'proper-lockfile';
+import { chmod, readFile, unlink, writeFile } from 'node:fs/promises';
 import { randomUUID } from 'node:crypto';
 import { asObject, MyQError, retryAfter } from './errors.js';
 
@@ -32,12 +34,28 @@ export function parseTokens(value: unknown): Tokens {
   };
 }
 
-export async function saveTokens(path: string, tokens: Tokens): Promise<void> {
+/** Serialize final credential commits across the platform and enrollment worker. */
+export async function withTokenLock<T>(path: string, commit: () => T): Promise<T> {
+  const release = await lockfile.lock(path, {
+    realpath: false, retries: { retries: 100, minTimeout: 100, maxTimeout: 100 },
+  });
+  try { return commit(); }
+  finally { await release(); }
+}
+
+export async function saveTokens(path: string, tokens: Tokens, expected?: Tokens): Promise<Tokens> {
   const temporary = `${path}.${randomUUID()}.tmp`;
   try {
     await writeFile(temporary, `${JSON.stringify(tokens)}\n`, { mode: 0o600, flag: 'wx' });
     await chmod(temporary, 0o600);
-    await rename(temporary, path);
+    return await withTokenLock(path, () => {
+      if (expected) {
+        const current = parseTokens(JSON.parse(readFileSync(path, 'utf8')) as unknown);
+        if (current.accessToken !== expected.accessToken || current.refreshToken !== expected.refreshToken) return current;
+      }
+      renameSync(temporary, path);
+      return tokens;
+    });
   } finally {
     await unlink(temporary).catch(() => {});
   }
@@ -140,9 +158,7 @@ export class TokenManager {
     try { renewed = tokenResponse(await response.json(), tokens.refreshToken); }
     catch { throw new MyQError('myQ returned an invalid token response.'); }
     // A manual sign-in that finished during this request wins over this old session.
-    const current = await this.read();
-    if (current.accessToken !== tokens.accessToken || current.refreshToken !== tokens.refreshToken) return current;
-    try { await saveTokens(this.path, renewed); }
+    try { renewed = await saveTokens(this.path, renewed, tokens); }
     catch { throw new MyQError('Cannot save renewed myQ credentials. Check token-file directory permissions.'); }
     this.retryAt = 0;
     this.rejectedRefresh = undefined;

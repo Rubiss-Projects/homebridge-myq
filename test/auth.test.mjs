@@ -70,3 +70,27 @@ test('a successful but malformed refresh response does not replay a potentially 
   await assert.rejects(manager.accessToken(), /Sign in again/);
   assert.equal(calls, 1);
 });
+
+test('a refresh commit from another process preserves a replacement under the shared lock', async t => {
+ const {spawn} = await import('node:child_process');
+ const {once} = await import('node:events');
+ const {default: lockfile} = await import('proper-lockfile');
+ const path = await credentials(t);
+ const release = await lockfile.lock(path, {realpath:false});
+ const child = spawn(process.execPath, ['--input-type=module', '--eval', `
+  import {saveTokens} from ${JSON.stringify(new URL('../dist/auth.js', import.meta.url).href)};
+  const pending = saveTokens(process.argv[1], {accessToken:'late',refreshToken:'late-refresh'}, {accessToken:'old-access',refreshToken:'old-refresh'});
+  process.send('started');
+  process.send(await pending);
+ `, path], {stdio:['ignore','ignore','pipe','ipc']});
+ t.after(() => child.kill());
+ const exited = once(child, 'exit');
+ assert.deepEqual(await once(child, 'message'), ['started', undefined]);
+ const result = once(child, 'message');
+ // Emulate enrollment's commit while it owns the same cross-process lock.
+ await writeFile(path, JSON.stringify({accessToken:'new-login',refreshToken:'new-login-refresh'}));
+ await release();
+ assert.equal((await result)[0].accessToken, 'new-login');
+ assert.equal((await exited)[0], 0);
+ assert.equal(JSON.parse(await readFile(path,'utf8')).refreshToken, 'new-login-refresh');
+});

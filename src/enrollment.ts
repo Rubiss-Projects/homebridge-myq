@@ -6,7 +6,7 @@ import { randomBytes } from 'node:crypto';
 import { mkdir, readFile, unlink, writeFile } from 'node:fs/promises';
 import { dirname } from 'node:path';
 import type { Socket } from 'node:net';
-import { CLIENT_ID, saveTokens, tokenResponse } from './auth.js';
+import { CLIENT_ID, saveTokens, tokenResponse, withTokenLock } from './auth.js';
 import { MyQClient } from './client.js';
 import { enrollmentActive } from './enrollment-lock.js';
 import { AUTH_HOSTS, MYQ_DOMAINS, ENROLLMENT_MS, enrollmentCertificate, iphoneProfile, pacFile, xml } from './enrollment-profile.js';
@@ -228,10 +228,13 @@ export class PhoneEnrollment {
       if (!tokens.refreshToken) throw new Error('No renewable credential.');
       await saveTokens(candidate, tokens);
       const doors = await new MyQClient(candidate, this.fetcher).doors();
-      if (!this.capturing()) return;
-      // The validated candidate is already private and atomically written. Commit without
-      // yielding so cancellation cannot interleave between the final check and replacement.
-      renameSync(candidate, this.options.tokenPath);
+      const committed = await withTokenLock(this.options.tokenPath, () => {
+        if (!this.capturing()) return false;
+        // Check cancellation and commit without yielding while holding the shared lock.
+        renameSync(candidate, this.options.tokenPath);
+        return true;
+      });
+      if (!committed) return;
       this.state = 'connected';
       this.message = `Connected. Found ${doors.length} garage door${doors.length === 1 ? '' : 's'}. Credentials are saved and will renew automatically.`;
       this.profile = '';

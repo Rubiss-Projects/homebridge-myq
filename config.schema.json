@@ -13,7 +13,6 @@
       "tokenFile": {
         "title": "Private token file",
         "type": "string",
-        "default": "/homebridge/myq-readonly-token.json",
         "description": "Absolute path to private JSON credentials: accessToken, optional refreshToken, and expiresAt (Unix milliseconds)."
       },
       "pollIntervalSeconds": {
