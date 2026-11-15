@@ -77,4 +77,4 @@ jobs:
           path: release
       - run: npm install -g npm@11
       - name: Publish the tested tarball using npm trusted publishing
-        run: npm publish release/*.tgz --access public --provenance --ignore-scripts
+        run: npm publish ./release/*.tgz --access public --provenance --ignore-scripts
