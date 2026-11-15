@@ -1,3 +1,4 @@
+import { setTimeout as delay } from 'node:timers/promises';
 import { request } from 'node:http';
 import { fork } from 'node:child_process';
 import { chmod, mkdir, unlink, open, stat } from 'node:fs/promises';
@@ -8,8 +9,21 @@ import { asObject } from './errors.js';
 export function controlPath(storage: string): string { return join(storage, '.myq-enrollment', 'control.sock'); }
 
 export async function setupRequest(storage: string, path: '/status' | '/finish'): Promise<Record<string, unknown>> {
+  for (let attempt = 0; ; attempt++) {
+    try { return await controlRequest(storage, path); }
+    catch (error) {
+      // Local status and finish are idempotent. macOS can reset connections while
+      // the worker removes its listener; retry briefly to observe its idle state.
+      if (attempt >= 2 || !(error instanceof Error) || !('code' in error)
+        || !['ECONNRESET', 'EPIPE'].includes(String(error.code))) throw error;
+      await delay(50);
+    }
+  }
+}
+
+async function controlRequest(storage: string, path: '/status' | '/finish'): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
-    const req = request({ socketPath: controlPath(storage), path, method: path === '/finish' ? 'POST' : 'GET', timeout: 3000 }, res => {
+    const req = request({ socketPath: controlPath(storage), agent: false, path, method: path === '/finish' ? 'POST' : 'GET', timeout: 3000 }, res => {
       let body = '';
       res.setEncoding('utf8');
       res.on('data', (chunk: string) => { body += chunk; if (body.length > 32_000) res.destroy(); });

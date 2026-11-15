@@ -23,7 +23,8 @@ async function stop(): Promise<void> {
   if (stopping) return;
   stopping = true;
   await session?.stop();
-  control.close();
+  // Drain the finish response before exiting; the UI must receive its acknowledgement.
+  await new Promise<void>(resolve => control.close(() => resolve()));
   if (ownedSocket) await unlink(controlPath(storage!)).catch(() => {});
   process.exit(0);
 }
