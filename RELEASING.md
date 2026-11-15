@@ -6,7 +6,7 @@ All changes land through a pull request to `main`. The active GitHub ruleset req
 
 ## Dependency updates
 
-Dependabot opens weekly npm updates and monthly GitHub Actions updates. Minor and patch updates automatically enable squash auto-merge, following the existing dependency automation in Rubiss-Projects repositories. Major updates remain for manual review. The same required CI and resolved-conversation rules apply; auto-merge cannot bypass them. The privileged metadata workflow never checks out or runs PR code.
+Dependabot opens weekly npm updates and monthly GitHub Actions updates. All Dependabot updates, including major versions, automatically enable squash auto-merge, following the existing dependency automation in Rubiss-Projects/ai-assistant. The same required CI and resolved-conversation rules apply; auto-merge cannot bypass them. The privileged metadata workflow never checks out or runs PR code.
 
 ## Publish a version
 

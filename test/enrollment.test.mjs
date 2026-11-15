@@ -197,3 +197,19 @@ test('profile PAC capability rebinds the phone after its Wi-Fi address changes',
   assert.equal((await fetch(f.session.url+'/status')).status,200);
  }finally{await f.close();}
 });
+
+test('control connection resets are retried without reporting an active worker as idle', async t => {
+ const {setupRequest,controlPath}=await import('../dist/enrollment-control.js');
+ const {mkdir}=await import('node:fs/promises');
+ const dir=await mkdtemp(join(tmpdir(),'myq-control-'));
+ await mkdir(join(dir,'.myq-enrollment'));
+ let requests=0;
+ const server=http.createServer((req,res)=>{
+  if(++requests===1){req.socket.destroy();return;}
+  res.end(JSON.stringify({state:'waiting'}));
+ });
+ t.after(async()=>{await new Promise(r=>server.close(r));await rm(dir,{recursive:true,force:true});});
+ server.listen(controlPath(dir));await once(server,'listening');
+ assert.equal((await setupRequest(dir,'/status')).state,'waiting');
+ assert.equal(requests,2);
+});
