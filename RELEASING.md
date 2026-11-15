@@ -4,6 +4,10 @@
 
 All changes land through a pull request to `main`. The active GitHub ruleset requires the `CI` check, an up-to-date branch, resolved review conversations, and linear history. Force pushes and branch deletion are blocked. Required approving reviews are zero so the sole maintainer can merge their own PR; checks cannot be bypassed. CI builds and tests on Node 22/24/26 (Linux) and Node 26 (macOS), then installs the packed artifact with production dependencies and checks plugin registration. Tests never actuate a physical garage door.
 
+## Dependency updates
+
+Dependabot opens weekly npm updates and monthly GitHub Actions updates. Minor and patch updates automatically enable squash auto-merge, following the existing dependency automation in Rubiss-Projects repositories. Major updates remain for manual review. The same required CI and resolved-conversation rules apply; auto-merge cannot bypass them. The privileged metadata workflow never checks out or runs PR code.
+
 ## Publish a version
 
 1. Run `npm version patch --no-git-tag-version` (or `minor` / `major`), update release notes, and submit a PR with both manifests.

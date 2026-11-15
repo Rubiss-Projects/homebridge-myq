@@ -1,6 +1,6 @@
 {
   "name": "homebridge-myq-connect",
-  "version": "1.0.0",
+  "version": "1.0.1",
   "description": "myQ garage controls and status with automatic token renewal for Homebridge",
   "license": "MIT",
   "main": "dist/index.js",
