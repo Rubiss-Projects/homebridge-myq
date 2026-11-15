@@ -9,7 +9,7 @@ export function controlPath(storage: string): string { return join(storage, '.my
 
 export async function setupRequest(storage: string, path: '/status' | '/finish'): Promise<Record<string, unknown>> {
   return new Promise((resolve, reject) => {
-    const req = request({ socketPath: controlPath(storage), path, method: path === '/finish' ? 'POST' : 'GET', timeout: 3000 }, res => {
+    const req = request({ socketPath: controlPath(storage), agent: false, path, method: path === '/finish' ? 'POST' : 'GET', timeout: 3000 }, res => {
       let body = '';
       res.setEncoding('utf8');
       res.on('data', (chunk: string) => { body += chunk; if (body.length > 32_000) res.destroy(); });
