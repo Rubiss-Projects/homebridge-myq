@@ -1,0 +1,34 @@
+{
+  "pluginAlias": "MyQReadOnly",
+  "pluginType": "platform",
+  "singular": true,
+  "headerDisplay": "Connect with the guided iPhone setup above. Credentials stay in a private file and renew automatically.",
+  "schema": {
+    "type": "object",
+    "properties": {
+      "name": {
+        "type": "string",
+        "default": "myQ"
+      },
+      "tokenFile": {
+        "title": "Private token file",
+        "type": "string",
+        "description": "Absolute path to private JSON credentials: accessToken, optional refreshToken, and expiresAt (Unix milliseconds)."
+      },
+      "pollIntervalSeconds": {
+        "title": "Poll interval (seconds)",
+        "type": "integer",
+        "default": 60,
+        "minimum": 30,
+        "maximum": 3600
+      },
+      "enableControl": {
+        "title": "Enable garage controls",
+        "type": "boolean",
+        "default": false,
+        "description": "Expose garage open/close controls in HomeKit. Requires myQ unattended-action permission."
+      }
+    }
+  },
+  "customUi": true
+}

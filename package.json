@@ -1,0 +1,58 @@
+{
+  "name": "homebridge-myq-connect",
+  "version": "1.0.0",
+  "description": "myQ garage controls and status with automatic token renewal for Homebridge",
+  "license": "MIT",
+  "main": "dist/index.js",
+  "types": "dist/index.d.ts",
+  "files": [
+    "dist",
+    "config.schema.json",
+    "README.md",
+    "homebridge-ui",
+    "LICENSE",
+    "assets"
+  ],
+  "keywords": [
+    "homebridge-plugin"
+  ],
+  "engines": {
+    "node": "^22.12.0 || ^24.0.0 || ^26.0.0",
+    "homebridge": ">=2.0.0"
+  },
+  "scripts": {
+    "build": "tsc",
+    "test": "npm run build && node --test test/*.test.mjs",
+    "prepack": "npm run build",
+    "login:macos": "npm run build && node scripts/test-native-login.mjs",
+    "check:package": "npm run build && node scripts/check-package.mjs"
+  },
+  "devDependencies": {
+    "@types/node": "^24.0.0",
+    "@types/node-forge": "^1.3.14",
+    "@types/proper-lockfile": "^4.1.4",
+    "@types/qrcode": "^1.5.6",
+    "homebridge": "2.5.0",
+    "typescript": "^5.9.3"
+  },
+  "type": "module",
+  "dependencies": {
+    "@homebridge/plugin-ui-utils": "2.3.0",
+    "node-forge": "1.4.3",
+    "proper-lockfile": "^4.1.2",
+    "qrcode": "1.5.4"
+  },
+  "author": "Ben Lawson",
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/Rubiss-Projects/homebridge-myq.git"
+  },
+  "homepage": "https://github.com/Rubiss-Projects/homebridge-myq#readme",
+  "bugs": {
+    "url": "https://github.com/Rubiss-Projects/homebridge-myq/issues"
+  },
+  "publishConfig": {
+    "access": "public",
+    "registry": "https://registry.npmjs.org/"
+  }
+}

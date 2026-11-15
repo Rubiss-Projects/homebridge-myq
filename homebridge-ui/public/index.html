@@ -1,0 +1,27 @@
+<div class="mb-4">
+  <h3>Connect myQ with your iPhone</h3>
+  <p>Sign into the official myQ app once. Homebridge saves the credentials privately and renews them automatically while myQ permits the session.</p>
+  <p>This guided setup temporarily intercepts myQ sign-in on your trusted home Wi-Fi. You approve a certificate on the iPhone, then remove the temporary profile. It also expires automatically after 15 minutes. Door controls in this plugin are paused until setup ends.</p>
+  <div id="input-panel">
+    <label for="address">Homebridge address on your home network</label>
+    <select id="address" class="form-control mb-2"></select>
+    <label for="ssid">iPhone Wi-Fi network name</label>
+    <input id="ssid" class="form-control mb-2" autocomplete="off" placeholder="Exact name shown in iPhone Wi-Fi settings">
+    <label for="wifi-password">Wi-Fi password (optional)</label>
+    <input id="wifi-password" class="form-control mb-2" type="password" autocomplete="off">
+    <p class="small">For WPA/WPA2/WPA3 personal networks. Leave the password blank to enter it on the iPhone if prompted. Wi-Fi credentials are used only in the temporary profile and are not saved to plugin configuration.</p>
+    <button id="start" class="btn btn-primary">Connect myQ</button>
+  </div>
+  <div id="session-panel" hidden>
+    <p>Setup stays active for 15 minutes even if you switch apps. Scan with your iPhone Camera, or open the setup link in Safari if you are already on the phone.</p>
+    <img hidden id="qr" alt="QR code for temporary myQ setup" width="280" height="280">
+    <p><a id="phone-link" target="_blank" rel="noreferrer">Open iPhone setup</a></p>
+    <p id="status" role="status"></p>
+    <p id="expires"></p>
+    <p>After signing in, remove <b>myQ Temporary Setup</b> under <b>Settings → General → VPN &amp; Device Management</b>. Verify your normal Wi-Fi connection, then finish here. If setup times out remove the profile before trying again.</p>
+    <button id="finish" class="btn btn-primary">I removed the profile — finish setup</button>
+  </div>
+  <p id="error" class="text-danger" role="alert"></p>
+</div>
+<hr><h4>Plugin settings</h4>
+<script src="setup.js"></script>
