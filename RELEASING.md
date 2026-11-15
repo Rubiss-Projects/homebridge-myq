@@ -2,7 +2,7 @@
 
 ## Merge gate
 
-All changes land through a pull request to `main`. The active GitHub ruleset requires the `CI` check, an up-to-date branch, resolved review conversations, and linear history. Force pushes and branch deletion are blocked. Required approving reviews are zero so the sole maintainer can merge their own PR; checks cannot be bypassed. CI builds and tests on Node 22/24/26 (Linux) and Node 26 (macOS), then installs the packed artifact with production dependencies and checks plugin registration. Tests never actuate a physical garage door.
+All changes land through a pull request to `main`. The active GitHub ruleset requires the `CI` check, resolved review conversations, and linear history. Force pushes and branch deletion are blocked. Required approving reviews are zero so the sole maintainer can merge their own PR; checks cannot be bypassed. Branches do not need to be rebased after every main-branch update, so passing Dependabot PRs can auto-merge without stalling. Release CI validates the combined merged commit before publishing. CI builds and tests on Node 22/24/26 (Linux) and Node 26 (macOS), then installs the packed artifact with production dependencies and checks plugin registration. Tests never actuate a physical garage door.
 
 ## Dependency updates
 
