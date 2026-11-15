@@ -2,11 +2,17 @@
 
 # homebridge-myq-connect
 
+[![CI](https://github.com/Rubiss-Projects/homebridge-myq/actions/workflows/ci.yml/badge.svg?branch=main)](https://github.com/Rubiss-Projects/homebridge-myq/actions/workflows/ci.yml)
+[![npm version](https://img.shields.io/npm/v/homebridge-myq-connect)](https://www.npmjs.com/package/homebridge-myq-connect)
+[![Node.js](https://img.shields.io/node/v/homebridge-myq-connect)](https://www.npmjs.com/package/homebridge-myq-connect)
+[![Homebridge 2.x](https://img.shields.io/badge/Homebridge-2.x-491F59)](https://github.com/homebridge/homebridge)
+[![MIT license](https://img.shields.io/github/license/Rubiss-Projects/homebridge-myq)](LICENSE)
+
 Homebridge 2.x integration for myQ garage doors, with guided iPhone sign-in and automatic credential renewal. Requires Linux or macOS for the setup worker. This independent project is not affiliated with Chamberlain or LiftMaster. Account/device reads, refresh-token renewal, and supervised door control have been verified against myQ iOS 5.324.0. The guided iPhone setup imports credentials from an authorized app login; subsequent renewal runs in the plugin. The generated iPhone profile, official app login, automatic credential import, manual profile removal, and subsequent phone-free renewal have been verified on a physical iPhone.
 
 ## Installation
 
-The npm package name is **homebridge-myq-connect**, distinct from the discontinued `homebridge-myq` package. Once published to npm, search for that exact name in Homebridge’s Plugins tab, or run `npm install -g homebridge-myq-connect`. GitHub releases include an installable `.tgz` for manual installation.
+The npm package name is **homebridge-myq-connect**, distinct from the discontinued `homebridge-myq` package. Search for that exact name in Homebridge’s Plugins tab, or run `npm install -g homebridge-myq-connect`. GitHub releases include an installable `.tgz` for manual installation.
 
 Open plugin settings, complete **Connect myQ**, enable garage controls if desired, and pair its child bridge using the instructions below. iPhone-assisted enrollment is supported; Android enrollment is not yet supported. Do not install this alongside the private development package: both use the `MyQReadOnly` platform alias. Existing development installations should preserve their config, child-bridge identity, and token file while replacing the package.
 
